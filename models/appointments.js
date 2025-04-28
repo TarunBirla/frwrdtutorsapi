@@ -16,18 +16,24 @@ module.exports = pool;
 pool
   .query(
     `
-    CREATE TABLE IF NOT EXISTS subjectAll (
-       id INT PRIMARY KEY,
-  name VARCHAR(255),
-  category_id INT,
-  category_name VARCHAR(255),
-  custom_to_branch VARCHAR(255) DEFAULT NULL
-       
-    )
+   CREATE TABLE IF NOT EXISTS appointment (
+  id INT PRIMARY KEY,
+  start DATETIME,
+  finish DATETIME,
+  units DECIMAL(5,2),
+  topic VARCHAR(255),
+  status VARCHAR(50),
+  is_deleted BOOLEAN,
+  location JSON,
+  rcras JSON,
+  cjas JSON,
+  service JSON
+);
+
 `
   )
   .then(() => {
-    console.log("✅ 'subjecttable' table ensured.");
+    console.log("✅ 'appointment' table ensured.");
   })
   .catch((err) => {
     console.error("❌ Error creating table:", err);

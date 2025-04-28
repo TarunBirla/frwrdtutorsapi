@@ -1,217 +1,13 @@
-// const bcrypt = require('bcryptjs');
-// const jwt = require('jsonwebtoken');
-// const db = require('../models/user');
-// const nodemailer = require('nodemailer');
-// const { EMAIL_PORT } = process.env;
-
-// // Email transporter setup
-// const transporter = nodemailer.createTransport({
-//   host: 'smtp.gmail.com',
-//   port: EMAIL_PORT,
-//   secure: parseInt(EMAIL_PORT) === 465,
-//   auth: {
-//     user: 'tarunbirla2018@gmail.com',
-//     pass: 'lervdzktkcpewuuo',
-//   },
-// });
-
-// const loggedInUsers = new Set();
-
-// // Register User
-// const register = async (req, res) => {
-//   const { email, password, firstname, lastname, mobileNumber } = req.body;
-
-//   try {
-//     if (!email || !password || !firstname || !lastname || !mobileNumber) {
-//       return res.status(400).json({ success: false, message: 'All fields are required' });
-//     }
-
-//     const [existingUser] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-//     if (existingUser.length > 0) {
-//       return res.status(400).json({ success: false, message: 'Email already exists' });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(password, 10);
-//     const userImage = req.file ? req.file.filename : null;
-
-//     await db.query('INSERT INTO users (email, password, firstname, lastname, mobileNumber, profileImage) VALUES (?, ?, ?, ?, ?, ?)',
-//       [email, hashedPassword, firstname, lastname, mobileNumber, userImage]);
-
-//     res.status(201).json({ success: true, message: 'User registered successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: 'Internal Server Error' });
-//   }
-// };
-
-// // Login User
-// const login = async (req, res) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     const [user] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-
-//     if (user.length === 0 || !(await bcrypt.compare(password, user[0].password))) {
-//       return res.status(401).json({ success: false, message: 'Invalid email or password' });
-//     }
-
-//     const token = jwt.sign({ userId: user[0].id }, 'secret_key', { expiresIn: '1h' });
-
-//     res.status(200).json({ success: true, message: 'Login successful', token, userid: user[0].id });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: 'Internal Server Error' });
-//   }
-// };
-
-// // Update Profile
-// const updateprofile = async (req, res) => {
-//   const userId = req.params.id;
-//   const { email, password, firstname, lastname, mobileNumber } = req.body;
-
-//   try {
-//     const [user] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
-//     if (!user || user.length === 0) {
-//       return res.status(404).json({ success: false, message: 'User not found' });
-//     }
-
-//     const profileImage = req.file ? req.file.filename : user[0].profileImage;
-//     const hashedPassword = password ? await bcrypt.hash(password, 10) : user[0].password;
-
-//     await db.query('UPDATE users SET email = ?, password = ?, firstname = ?, lastname = ?, mobileNumber = ?, profileImage = ? WHERE id = ?',
-//       [email, hashedPassword, firstname, lastname, mobileNumber, profileImage, userId]);
-
-//     res.status(200).json({ success: true, message: 'Profile updated successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: 'Internal Server Error' });
-//   }
-// };
-
-// // Logout User
-// const logout = (req, res) => {
-//   const userId = req.params.id;
-//   loggedInUsers.delete(userId);
-//   res.status(200).json({ success: true, message: 'Logout successful' });
-// };
-
-// // Get User Profile
-// const profile = async (req, res) => {
-//   const userId = req.params.id;
-
-//   try {
-//     const [user] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
-
-//     if (user.length === 0) {
-//       return res.status(404).json({ success: false, message: 'User not found' });
-//     }
-
-//     const userProfile = {
-//       id: user[0].id,
-//       email: user[0].email,
-//       firstname: user[0].firstname,
-//       lastname: user[0].lastname,
-//       mobileNumber: user[0].mobileNumber,
-//       profileImage: user[0].profileImage,
-//     };
-
-//     res.status(200).json({ success: true, user: userProfile });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: 'Internal Server Error' });
-//   }
-// };
-
-// // Send Email Helper
-// const sendEmail = async (to, subject, html) => {
-//   try {
-//     await transporter.sendMail({ to, subject, html });
-//     console.log(`Email sent successfully to ${to}`);
-//   } catch (error) {
-//     console.error('Error sending email:', error);
-//     throw error;
-//   }
-// };
-
-// // Forgot Password
-// const forgetpassword = async (req, res) => {
-//   const { email } = req.body;
-
-//   try {
-//     const [user] = await db.query('SELECT id, email FROM users WHERE email = ?', [email]);
-
-//     if (!user || user.length === 0) {
-//       return res.status(404).json({ success: false, message: 'User not found' });
-//     }
-
-//     const userID = user[0].id;
-//     await db.query('UPDATE users SET reset_user_id = ?, resettokenexpires = NOW() + INTERVAL 1 HOUR WHERE id = ?',
-//       [userID, userID]);
-
-//     const resetLink = `https://storyfi.hireactjob.in/changepassword/${userID}`;
-//     const emailSubject = 'Password Reset Link';
-//     const emailHTML = `Click the following link to reset your password: <a href="${resetLink}">${resetLink}</a>`;
-
-//     await sendEmail(user[0].email, emailSubject, emailHTML);
-
-//     res.status(201).json({ success: true, message: 'Password reset link sent to your email' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: 'Internal Server Error' });
-//   }
-// };
-
-// // Change Password
-// const changepassword = async (req, res) => {
-//   const userId = req.params.id;
-//   const { newPassword } = req.body;
-
-//   try {
-//     const [user] = await db.query('SELECT * FROM users WHERE id = ?', [userId]);
-//     if (!user || user.length === 0) {
-//       return res.status(404).json({ success: false, message: 'User not found' });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
-//     await db.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, userId]);
-
-//     res.status(200).json({ success: true, message: 'Password changed successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: 'Internal Server Error' });
-//   }
-// };
-
-// module.exports = {
-//   register,
-//   login,
-  // logout,
-  // profile,
-  // forgetpassword,
-  // changepassword,
-  // updateprofile
-// };
-
-
-
-
-
-
-
-
-
-
-
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-const user = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../models/enquiry');
 const tutordb = require('../models/tutors');
 const subjectdb = require('../models/subject');
 const locationdb = require('../models/location');
+const studentdb = require('../models/student');
 
 const app = express();
 app.use(cors());
@@ -232,111 +28,321 @@ const transporter = nodemailer.createTransport({
     pass: 'lervdzktkcpewuuo',
   },
 });
-// Register User
-const register = async (req, res) => {
-  const { email, password, firstname, lastname, mobileNumber } = req.body;
 
-  try {
-    if (!email || !password || !firstname || !lastname || !mobileNumber) {
-      return res.status(400).json({ success: false, message: 'All fields are required' });
-    }
 
-    const [existingUser] = await user.query('SELECT * FROM users WHERE email = ?', [email]);
-    if (existingUser.length > 0) {
-      return res.status(400).json({ success: false, message: 'Email already exists' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const userImage = req.file ? req.file.filename : null;
-
-    await user.query(
-      'INSERT INTO users (email, password, firstname, lastname, mobileNumber, profileImage) VALUES (?, ?, ?, ?, ?, ?)',
-      [email, hashedPassword, firstname, lastname, mobileNumber, userImage]
-    );
-
-    res.status(201).json({ success: true, message: 'User registered successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-};
-
-// Login User
-const login = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const [row] = await user.query('SELECT * FROM users WHERE email = ?', [email]);
-
-    if (row.length === 0 || !(await bcrypt.compare(password, row[0].password))) {
-      return res.status(401).json({ success: false, message: 'Invalid email or password' });
-    }
-
-    const token = jwt.sign({ userId: row[0].id }, 'secret_key', { expiresIn: '1h' });
-
-    res.status(200).json({ success: true, message: 'Login successful', token, userid: row[0].id });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-};
-// Send Email Helper
+// Helper function to send email
 const sendEmail = async (to, subject, html) => {
   try {
-    await transporter.sendMail({ to, subject, html });
-    console.log(`Email sent successfully to ${to}`);
+    await transporter.sendMail({ from: '"Admin" <tarunbirla2018@gmail.com>', to, subject, html });
+    console.log(`✅ Email sent successfully to ${to}`);
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('❌ Error sending email:', error);
     throw error;
   }
 };
 
-// Forgot Password
-const forgetpassword = async (req, res) => {
-  const { email } = req.body;
+// Create Client & Student API
+// const clientAPIPOST = async (req, res) => {
+//   const POST_API_KEY_clients = '26ba9cb1b455fad1256c9639deceef185a6d4e39';
+//   const POST_API_KEY_recipients = '683f1f10a58ba1920f7315939670bf5de12e2f98';
+//   const { user } = req.body;
+
+//   if (
+//     !user ||
+//     !user.title ||
+//     !user.first_name ||
+//     !user.last_name ||
+//     !user.email ||
+//     !user.studentfirstname ||
+//     !user.studentlastname ||
+//     !user.mobile ||
+//     !user.phone
+//   ) {
+//     return res.status(400).json({ error: 'All fields are required.' });
+//   }
+
+//   try {
+//     console.log("user", user);
+
+//     // 1. Create Client
+//     const responseClient = await axios.post(
+//       'https://secure.tutorcruncher.com/api/clients/',
+//       {
+//         title: user.title,
+//         first_name: user.first_name,
+//         last_name: user.last_name,
+//         email: user.email
+//       },
+//       {
+//         headers: {
+//           Authorization: `Token ${POST_API_KEY_clients}`,
+//           'Content-Type': 'application/json'
+//         }
+//       }
+//     );
+
+//     const clientData = {
+//       id: responseClient.data.id,
+//       first_name: user.first_name,    // Correct from your own sent data
+//       last_name: user.last_name
+//     };
+
+//     // 2. Create Student
+//     const responseStudent = await axios.post(
+//       'https://secure.tutorcruncher.com/api/recipients/',
+//       {
+//         paying_client: clientData.id,
+//         email: user.email,
+//         first_name: user.studentfirstname,
+//         last_name: user.studentlastname,
+//         mobile: user.mobile,
+//         phone: user.phone
+//       },
+//       {
+//         headers: {
+//           Authorization: `Token ${POST_API_KEY_recipients}`,
+//           'Content-Type': 'application/json'
+//         }
+//       }
+//     );
+
+//     const studentData = responseStudent.data;
+
+    // 3. Generate and hash password
+    // const generatedPassword = Math.random().toString(36).slice(-8);
+    // const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+//     // 4. Insert into MySQL
+//     await studentdb.query(
+//       `INSERT INTO student 
+//       (studentid, studentfirstname, studentlastname, email, mobile, phone, clientid, clientfirstname, clientlastname, password) 
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//       [
+//         studentData.id,
+//         studentData.first_name,
+//         studentData.last_name,
+//         studentData.email,
+//         studentData.mobile,
+//         studentData.phone,
+//         clientData.id,
+//         clientData.first_name,
+//         clientData.last_name,
+//         hashedPassword
+//       ]
+//     );
+
+    // // 5. Send password email
+    // const mailHTML = `
+    //   <p>Hello ${user.studentfirstname},</p>
+    //   <p>Your account has been created successfully.</p>
+    //   <p><strong>Generated Password:</strong> ${generatedPassword}</p>
+    //   <p>Please change your password after logging in.</p>
+    // `;
+    // await sendEmail(user.email, 'Your Account Password', mailHTML);
+
+//     res.status(201).json({
+//       message: 'Client and student created successfully. Data saved in DB and email sent.',
+//       client: responseClient.data,
+//       // student: responseStudent.data
+//     });
+
+//   } catch (error) {
+//     console.error('❌ Error:', error.response?.data || error.message);
+//     res.status(error.response?.status || 500).json(error.response?.data || { error: error.message });
+//   }
+// };
+
+const clientAPIPOST = async (req, res) => {
+  const { user } = req.body;
+
+  if (
+    !user.title ||
+    !user.first_name ||
+    !user.last_name ||
+    !user.email ||
+    !user.studentfirstname ||
+    !user.studentlastname ||
+    !user.studentemail ||     // ✅ Require student's own email
+    !user.mobile ||
+    !user.phone
+  ) {
+    return res.status(400).json({ error: 'All fields are required.' });
+  }
 
   try {
-    const [row] = await user.query('SELECT id, email FROM users WHERE email = ?', [email]);
+    console.log("Incoming user object:", user);
 
-    if (!row || row.length === 0) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    const POST_API_KEY_clients = '26ba9cb1b455fad1256c9639deceef185a6d4e39';
+
+    const clientPayload = {
+      title: user.title,
+      first_name: user.first_name,   // Client First Name
+      last_name: user.last_name,     // Client Last Name
+      email: user.email               // Client Email
+    };
+
+    const responseClient = await axios.post(
+      'https://secure.tutorcruncher.com/api/clients/',
+      clientPayload,
+      {
+        headers: {
+          Authorization: `Token ${POST_API_KEY_clients}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    const clientData = responseClient.data;
+    console.log("✅ Client created:", clientData);
+
+    if (clientData && clientData.id) {
+      const POST_API_KEY_recipients = '683f1f10a58ba1920f7315939670bf5de12e2f98';
+
+      const studentPayload = {
+        paying_client: clientData.id,
+        email: user.studentemail,            // ✅ Student Email (different)
+        first_name: user.studentfirstname,    // Student First Name
+        last_name: user.studentlastname,      // Student Last Name
+        mobile: user.mobile,
+        phone: user.phone
+      };
+
+      const responseStudent = await axios.post(
+        'https://secure.tutorcruncher.com/api/recipients/',
+        studentPayload,
+        {
+          headers: {
+            Authorization: `Token ${POST_API_KEY_recipients}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const studentData = responseStudent.data;
+      console.log("✅ Student created:", studentData);
+
+      
+    // 3. Generate and hash password
+    const generatedPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+      await studentdb.query(
+        `INSERT INTO student 
+        (studentid, studentfirstname, studentlastname, email, mobile, phone, clientid, clientfirstname, clientlastname,password) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
+        [
+          studentData.id,
+          studentData.first_name,
+          studentData.last_name,
+          studentData.email,
+          studentData.mobile,
+          studentData.phone,
+          clientData.id,
+          clientData.first_name,
+          clientData.last_name,
+          hashedPassword
+        ]
+      );
+
+       // 5. Send password email
+    const mailHTML = `
+    <p>Hello ${user.studentfirstname},</p>
+    <p>Your account has been created successfully.</p>
+    <p><strong>Generated Password:</strong> ${generatedPassword}</p>
+    <p>Please change your password after logging in.</p>
+  `;
+  await sendEmail(user.email, 'Your Account Password', mailHTML);
+
+      res.status(201).json({
+        message: 'Client and student created successfully. Data saved in DB.',
+        client: clientData,
+        student: studentData
+      });
+
+    } else {
+      console.error('❌ Client creation failed, Student creation skipped.');
+      return res.status(400).json({ error: 'Client creation failed, student not created.' });
     }
 
-    const userID = row[0].id;
+  } catch (error) {
+    console.error('❌ Error occurred:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json(error.response?.data || { error: error.message });
+  }
+};
 
-    // ❌ No update here
-    const resetLink = `http://localhost:3000/changepassword/${userID}`;
-    const emailSubject = 'Password Reset Link';
-    const emailHTML = `Click the following link to reset your password: <a href="${resetLink}">${resetLink}</a>`;
 
-    await sendEmail(row[0].email, emailSubject, emailHTML);
 
-    res.status(201).json({ success: true, message: 'Password reset link sent to your email' });
+
+// Login API
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const [row] = await studentdb.query('SELECT * FROM student WHERE email = ?', [email]);
+
+    if (row.length === 0) {
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    }
+
+    const validPassword = await bcrypt.compare(password, row[0].password);
+
+    if (!validPassword) {
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    }
+
+    const token = jwt.sign({ userId: row[0].studentid }, 'secret_key', { expiresIn: '1h' });
+
+    res.status(200).json({ success: true, message: 'Login successful', token, user: row[0] });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 
-
-const changepassword = async (req, res) => {
-  const userId = req.params.id;
-  const { newPassword } = req.body;
+// Forgot Password API
+const forgetpassword = async (req, res) => {
+  const { email } = req.body;
 
   try {
-    // Check if the user with the given ID exists
-    const [row] = await user.query('SELECT * FROM users WHERE id = ?', [userId]);
+    const [row] = await studentdb.query('SELECT * FROM student WHERE email = ?', [email]);
 
-    if (!row || row.length === 0) {
+    if (row.length === 0) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    // Update the user's password in the database
+    const userID = row[0].studentid;
+    const resetLink = `http://localhost:3000/changepassword/${userID}`;
+    const emailHTML = `Click the following link to reset your password: <a href="${resetLink}">${resetLink}</a>`;
+
+    await sendEmail(email, 'Password Reset Link', emailHTML);
+
+    res.status(200).json({ success: true, message: 'Password reset link sent to your email' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+// Change Password API
+const changepassword = async (req, res) => {
+  const userId = req.params.studentid;
+  const { newPassword } = req.body;
+  
+
+  try {
+    const [row] = await studentdb.query('SELECT * FROM student WHERE studentid = ?', [userId]);
+
+    if (row.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await user.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, userId]);
+    await studentdb.query('UPDATE student SET password = ? WHERE studentid = ?', [hashedPassword, userId]);
 
     res.status(200).json({ success: true, message: 'Password changed successfully' });
-  } catch (error) {
+  } 
+  
+  catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
@@ -415,35 +421,34 @@ const GetallContractors =async (req,res)=>{
   }
 }
 
-
-const clientAPIPOST =async (req,res)=>{
-const POST_API_KEY_clients = '26ba9cb1b455fad1256c9639deceef185a6d4e39';
+const GetByIdContractors = async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const response = await axios.post(
-      'https://secure.tutorcruncher.com/api/clients/',
-      req.body,
-      {
-        headers: {
-          Authorization: `Token ${POST_API_KEY_clients}`, // Capital 'T' in Token ✅
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    res.json(response.data);
-  } catch (error) {
-    console.error('POST /clients error:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json(error.response?.data || { error: error.message });
-  }
-}
+    const [rows] = await tutordb.query('SELECT * FROM tutors WHERE id = ?', [id]);
 
-const appointmentsAPIPOST =async (req,res)=>{
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Tutor not found' });
+    }
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error('❌ Error fetching tutor by ID:', err.message);
+    res.status(500).json({ error: 'Failed to fetch tutor' });
+  }
+};
+
+
+
+
+
+
+const appointmentsAPIGET =async (req,res)=>{
   const POST_API_KEY_appointments = '1b74f252cd62fd1f8c0709e95f3fee6c70667ee7';
   
     try {
-      const response = await axios.post(
+      const response = await axios.get(
         'https://secure.tutorcruncher.com/api/appointments/',
-        req.body,
         {
           headers: {
             Authorization: `Token ${POST_API_KEY_appointments}`, // Capital 'T' in Token ✅
@@ -453,10 +458,71 @@ const appointmentsAPIPOST =async (req,res)=>{
       );
       res.json(response.data);
     } catch (error) {
-      console.error('POST /appointments error:', error.response?.data || error.message);
+      console.error('get /appointments error:', error.response?.data || error.message);
       res.status(error.response?.status || 500).json(error.response?.data || { error: error.message });
     }
   }
+
+const appointmentsAPIPOST = async (req, res) => {
+  const POST_API_KEY_appointments = '1b74f252cd62fd1f8c0709e95f3fee6c70667ee7';
+
+  const appointments = req.body; // expecting an array of appointments
+
+  if (!Array.isArray(appointments)) {
+    return res.status(400).json({ error: 'Request body must be an array of appointment objects.' });
+  }
+
+  try {
+    const results = [];
+
+    for (const appointment of appointments) {
+      const response = await axios.post(
+        'https://secure.tutorcruncher.com/api/appointments/',
+        appointment,
+        {
+          headers: {
+            Authorization: `Token ${POST_API_KEY_appointments}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      results.push(response.data);
+    }
+
+    res.json({ success: true, appointments: results });
+  } catch (error) {
+    console.error('POST /appointments error:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json(error.response?.data || { error: error.message });
+  }
+};
+  
+
+const servicesAPIPOST = async (req, res) => {
+  const POST_API_KEY_services = 'bff8593a4911ee078cbf180d94b72bd1e56e2f42';
+
+  try {
+    const response = await axios.post(
+      'https://secure.tutorcruncher.com/api/services/',
+      req.body,
+      {
+        headers: {
+          Authorization: `Token ${POST_API_KEY_services}`, // ✅ fixed backticks here
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error('POST /services error:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json(error.response?.data || { error: error.message });
+  }
+};
+  
+
+
+
+
+
 
 const enquiryAPIPOST = async (req, res) => {
   const POST_API_KEY_enquiry = 'f746e91a9d153540ef810b083e20643fbdd28ab7';
@@ -475,6 +541,8 @@ const enquiryAPIPOST = async (req, res) => {
     );
 
     const enquiryId = response.data.id;
+    const enquirydata = response.data;
+    console.log('✅Enquiry data to MySQL:', enquirydata);
 
     // Save enquiry ID and timestamp to MySQL using the connection pool
     const insertQuery = 'INSERT INTO enquiry (id) VALUES (?)';
@@ -635,7 +703,6 @@ const GetAlldatalocation = async (req, res) => {
   };
 
 module.exports = {
-  register,
   login,
   forgetpassword,
   changepassword,
@@ -645,9 +712,12 @@ module.exports = {
   subjectsAPIGET,
   contractor_availabilityAPIGET,
   appointmentsAPIPOST,
+  appointmentsAPIGET,
   GetallContractors,
   GetAlldatasubject,
   locationAPIGET,
   GetAlldatalocation,
+  GetByIdContractors,
+  servicesAPIPOST,
  
 };

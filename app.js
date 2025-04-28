@@ -2,6 +2,8 @@ const express = require("express");
 const mysql = require("mysql2");
 const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
+const packegaRoutes = require('./routes/packegaRoutes');
+const appointmentRoutes = require('./routes/appointmentsRouters');
 const errorHandler = require('./middleware/errorHandler');
 const path = require('path');
 
@@ -37,6 +39,8 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api', authRoutes);
+app.use('/api', packegaRoutes);
+app.use('/api', appointmentRoutes);
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Error Handler

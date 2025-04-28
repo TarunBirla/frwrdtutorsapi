@@ -12,22 +12,18 @@ const pool = mysql.createPool({
 });
 
 module.exports = pool;
-
-pool
-  .query(
-    `
-    CREATE TABLE IF NOT EXISTS subjectAll (
-       id INT PRIMARY KEY,
-  name VARCHAR(255),
-  category_id INT,
-  category_name VARCHAR(255),
-  custom_to_branch VARCHAR(255) DEFAULT NULL
-       
+pool.query(`
+    CREATE TABLE IF NOT EXISTS packega (
+      id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255),
+      numberofclass INT,
+      description VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
-`
-  )
+  `)
+  
   .then(() => {
-    console.log("✅ 'subjecttable' table ensured.");
+    console.log("✅ 'packega' table ensured.");
   })
   .catch((err) => {
     console.error("❌ Error creating table:", err);

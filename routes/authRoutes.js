@@ -20,12 +20,12 @@ const authController = require('../controllers/authController');
   
   // Create multer instance
   const upload = multer({ storage: storage });
-router.post('/register',upload.single('profileImage'), authController.register);
 router.post('/login', authController.login);
 router.post('/forget_password', authController.forgetpassword);
-router.post('/changepassword/:id', authController.changepassword);
+router.post('/changepassword/:studentid', authController.changepassword);
   router.get('/contractors', authController.saveAllContractors);
   router.get('/contractorsalldata', authController.GetallContractors);
+  router.get('/contractorsbyid/:id', authController.GetByIdContractors);
   router.get('/contractorsavailability/:id', authController.contractor_availabilityAPIGET);
   router.post('/clients', authController.clientAPIPOST);
   router.post('/enquiry', authController.enquiryAPIPOST);
@@ -34,6 +34,8 @@ router.post('/changepassword/:id', authController.changepassword);
   router.get('/location', authController.locationAPIGET);
   router.get('/locationalldata', authController.GetAlldatalocation);
   router.post('/appointments', authController.appointmentsAPIPOST);
+  router.get('/appointments', authController.appointmentsAPIGET);
+  router.post('/services', authController.servicesAPIPOST);
 
 
 module.exports = router;

@@ -16,18 +16,23 @@ module.exports = pool;
 pool
   .query(
     `
-    CREATE TABLE IF NOT EXISTS subjectAll (
-       id INT PRIMARY KEY,
-  name VARCHAR(255),
-  category_id INT,
-  category_name VARCHAR(255),
-  custom_to_branch VARCHAR(255) DEFAULT NULL
-       
-    )
+ CREATE TABLE IF NOT EXISTS student (
+  studentid INT PRIMARY KEY,
+  studentfirstname VARCHAR(255),
+  studentlastname VARCHAR(255),
+  email VARCHAR(255),
+  password VARCHAR(255),
+  mobile VARCHAR(255),
+  phone VARCHAR(255),
+  clientid INT,
+  clientfirstname VARCHAR(255),
+  clientlastname VARCHAR(255)
+);
+
 `
   )
   .then(() => {
-    console.log("✅ 'subjecttable' table ensured.");
+    console.log("✅ 'student' table ensured.");
   })
   .catch((err) => {
     console.error("❌ Error creating table:", err);

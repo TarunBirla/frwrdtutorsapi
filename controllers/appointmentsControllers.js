@@ -19,8 +19,7 @@ const saveAllAppointments = async (req, res) => {
 
       const insertQuery = `
         INSERT INTO appointment (
-          id, start, finish, units, topic, status, is_deleted, location, rcras, cjas, service
-        )
+          id, start, finish, units, topic, status, is_deleted, location, rcras, cjas, service)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 
           topic = VALUES(topic), 

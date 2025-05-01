@@ -13,8 +13,7 @@ const pool = mysql.createPool({
 
 module.exports = pool;
 
-pool
-  .query(
+pool.query(
     `
    CREATE TABLE IF NOT EXISTS appointment (
   id INT PRIMARY KEY,

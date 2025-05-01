@@ -13,8 +13,7 @@ const pool = mysql.createPool({
 
 module.exports = pool;
 
-pool
-  .query(
+pool.query(
     `
     CREATE TABLE IF NOT EXISTS location (
        id INT PRIMARY KEY,
